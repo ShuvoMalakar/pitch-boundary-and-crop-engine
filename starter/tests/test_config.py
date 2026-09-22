@@ -54,7 +54,7 @@ def test_custom_pipeline_config_from_dict():
 
 
 def test_fail_fast_on_extra_unexpected_keys():
-    """Assignment requirement: unexpected keys must cause immediate load-time failure."""
+    """Unexpected keys must cause immediate load-time failure."""
     raw = {
         "video_path": "test.mp4",
         "unknown_flag": 123,
