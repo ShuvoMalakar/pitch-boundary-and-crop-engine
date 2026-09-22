@@ -20,6 +20,10 @@ from crop_engine.exceptions import (
     ReportingError,
     VideoSourceError,
 )
+from crop_engine.geometry import (
+    CropBox,
+    GeometryCalculator,
+)
 
 __all__ = [
     "CropSearchConfig",
@@ -34,4 +38,6 @@ __all__ = [
     "DetectionError",
     "CropCalculationError",
     "ReportingError",
+    "CropBox",
+    "GeometryCalculator",
 ]
