@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.crop_engine.exceptions import (
+from crop_engine.exceptions import (
     ConfigurationError,
     CropCalculationError,
     CropEngineError,
