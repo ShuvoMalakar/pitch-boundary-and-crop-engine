@@ -47,10 +47,17 @@ class PitchCropPipeline:
     ):
         self.config = config
         self.detector = detector or get_detector(config.field_detector)
-        self.reporter = reporter
         self.logger = setup_logging(config.debug_mode)
         self.metrics_collector = MetricsCollector()
         self.geometry = GeometryCalculator(crop_config=config.crop_search)
+
+        if reporter is not None:
+            self.reporter = reporter
+        elif config.mock_api_url:
+            from crop_engine.reporter import PlatformReporter
+            self.reporter = PlatformReporter(base_url=config.mock_api_url)
+        else:
+            self.reporter = None
 
     def _process_frame(
         self, frame_idx: int, frame: np.ndarray, timestamp_s: float
@@ -114,12 +121,17 @@ class PitchCropPipeline:
 
         cap = cv2.VideoCapture(self.config.video_path)
         if not cap.isOpened():
+            if self.reporter:
+                self.reporter.report_job_failed(f"Could not open video: {self.config.video_path}")
             raise VideoSourceError(f"Could not open video: {self.config.video_path}")
 
         video_fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         frame_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) or 1280
         frame_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) or 720
+
+        if self.reporter:
+            self.reporter.report_job_started(self.config.video_path, total_frames)
 
         # Update geometry calculator dimensions if different from defaults
         if frame_w != self.geometry.frame_width or frame_h != self.geometry.frame_height:
@@ -156,8 +168,30 @@ class PitchCropPipeline:
                     executor.submit(self._process_frame, idx, frame, timestamp_s)
                 )
 
+            processed_count = 0
+            total_sampled = len(sample_indices)
+            report_interval = max(1, total_sampled // 5)
+
             for future in as_completed(futures):
                 frame_results.append(future.result())
+                processed_count += 1
+
+                if self.reporter and total_sampled > 0 and (
+                    processed_count % report_interval == 0 or processed_count == total_sampled
+                ):
+                    from crop_engine.reporter import JobProgressPayload
+
+                    progress_pct = (processed_count / total_sampled) * 100.0
+                    elapsed_now = max(0.001, time.time() - start_time)
+                    self.reporter.report_progress(
+                        JobProgressPayload(
+                            job_id=self.reporter.job_id,
+                            progress_percent=round(progress_pct, 1),
+                            frames_processed=processed_count,
+                            total_frames=total_sampled,
+                            current_fps=round(processed_count / elapsed_now, 2),
+                        )
+                    )
 
         cap.release()
 
@@ -171,6 +205,9 @@ class PitchCropPipeline:
         metrics = self.metrics_collector.finish(
             total_frames=total_frames, elapsed_time_s=elapsed_time_s
         )
+
+        if self.reporter:
+            self.reporter.report_job_completed(metrics, stable_crop)
 
         self.logger.info(
             f"Pipeline finished: {metrics.sampled_frames} sampled frames, "
