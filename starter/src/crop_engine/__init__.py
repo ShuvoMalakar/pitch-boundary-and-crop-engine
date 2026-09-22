@@ -24,6 +24,11 @@ from crop_engine.geometry import (
     CropBox,
     GeometryCalculator,
 )
+from crop_engine.pipeline import (
+    FrameResult,
+    PipelineResult,
+    PitchCropPipeline,
+)
 from crop_engine.telemetry import (
     MetricsCollector,
     RunMetrics,
@@ -48,4 +53,7 @@ __all__ = [
     "RunMetrics",
     "MetricsCollector",
     "setup_logging",
+    "FrameResult",
+    "PipelineResult",
+    "PitchCropPipeline",
 ]
