@@ -24,6 +24,11 @@ from crop_engine.geometry import (
     CropBox,
     GeometryCalculator,
 )
+from crop_engine.telemetry import (
+    MetricsCollector,
+    RunMetrics,
+    setup_logging,
+)
 
 __all__ = [
     "CropSearchConfig",
@@ -40,4 +45,7 @@ __all__ = [
     "ReportingError",
     "CropBox",
     "GeometryCalculator",
+    "RunMetrics",
+    "MetricsCollector",
+    "setup_logging",
 ]
