@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 from shapely.geometry import Polygon
 
-from crop_engine.config import FieldDetectorConfig
-from crop_engine.detector import (
+from src.crop_engine.config import FieldDetectorConfig
+from src.crop_engine.detector import (
     ColorThresholdDetector,
     FieldDetector,
     get_detector,

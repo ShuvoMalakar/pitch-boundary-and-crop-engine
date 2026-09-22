@@ -12,6 +12,14 @@ from crop_engine.detector import (
     FieldDetector,
     get_detector,
 )
+from crop_engine.exceptions import (
+    ConfigurationError,
+    CropCalculationError,
+    CropEngineError,
+    DetectionError,
+    ReportingError,
+    VideoSourceError,
+)
 
 __all__ = [
     "CropSearchConfig",
@@ -20,4 +28,10 @@ __all__ = [
     "FieldDetector",
     "ColorThresholdDetector",
     "get_detector",
+    "CropEngineError",
+    "ConfigurationError",
+    "VideoSourceError",
+    "DetectionError",
+    "CropCalculationError",
+    "ReportingError",
 ]

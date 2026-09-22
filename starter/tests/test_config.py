@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from crop_engine.config import (
+from src.crop_engine.config import (
     CropSearchConfig,
     FieldDetectorConfig,
     PipelineConfig,
