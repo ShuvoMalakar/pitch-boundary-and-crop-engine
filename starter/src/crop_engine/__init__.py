@@ -29,6 +29,11 @@ from crop_engine.pipeline import (
     PipelineResult,
     PitchCropPipeline,
 )
+from crop_engine.reporter import (
+    JobEventPayload,
+    JobProgressPayload,
+    PlatformReporter,
+)
 from crop_engine.telemetry import (
     MetricsCollector,
     RunMetrics,
@@ -56,4 +61,7 @@ __all__ = [
     "FrameResult",
     "PipelineResult",
     "PitchCropPipeline",
+    "JobProgressPayload",
+    "JobEventPayload",
+    "PlatformReporter",
 ]
